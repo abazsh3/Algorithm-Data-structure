@@ -3,7 +3,6 @@ import util from "util";
 type QueueItem<T> = {
   value: T;
   next: NullableItem<T>;
-  prev: NullableItem<T>;
 };
 
 type NullableItem<T> = QueueItem<T> | null;
@@ -11,11 +10,9 @@ type NullableItem<T> = QueueItem<T> | null;
 class QueueItemNode<T> {
   value: T;
   next: NullableItem<T>;
-  prev: NullableItem<T>;
   constructor(value: T) {
     this.value = value;
     this.next = null;
-    this.prev = null;
   }
 }
 
@@ -32,16 +29,16 @@ class Queue<T> {
 
   enqueue(value: T) {
     const newLast = new QueueItemNode(value);
-    newLast.next = this._last;
-    if (this._last) {
-      this._last.prev = newLast;
-    }
 
-    if (!this._first) {
-      this._first = newLast;
+    if (this._last) {
+      this._last.next = newLast;
     }
 
     this._last = newLast;
+
+    if (this.isEmpty()) {
+      this._first = this._last;
+    }
 
     this.length++;
 
@@ -50,15 +47,15 @@ class Queue<T> {
 
   dequeue() {
     if (this.isEmpty()) return undefined;
-    const dequeuedItem = { ...this._first };
 
-    this._first = this._first?.prev || null;
-    if (this._first) {
-      this._first.next = null;
-    }
+    const dequeuedItem = this._first;
+
+    const newFirst = this._first!.next;
+
+    this._first = newFirst;
 
     this.length--;
-    return dequeuedItem;
+    return dequeuedItem?.value;
   }
 
   isEmpty() {
@@ -66,7 +63,7 @@ class Queue<T> {
   }
 
   [util.inspect.custom]() {
-    let currentNode: NullableItem<T> = this._last;
+    let currentNode: NullableItem<T> = this._first;
 
     const array = Array.from({ length: this.length }, () => {
       const currentNodeValue = currentNode?.value;
