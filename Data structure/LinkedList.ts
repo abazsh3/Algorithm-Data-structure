@@ -2,14 +2,14 @@ import util from "util";
 
 type LinkedListItem<T> = {
   value: T;
-  next: LinkedListItem<T> | null;
+  next: NullableItem<T>;
 };
 
 type NullableItem<T> = LinkedListItem<T> | null;
 
 class LinkedNode<T> {
   value: T;
-  next: LinkedListItem<T> | null;
+  next: NullableItem<T>;
   constructor(value: T) {
     this.value = value;
     this.next = null;
@@ -111,7 +111,7 @@ class LinkedList<T> {
     this._head = newhead;
   }
   [util.inspect.custom]() {
-    let currentNode: LinkedListItem<T> | null = this._head;
+    let currentNode: NullableItem<T> = this._head;
 
     const array = Array.from({ length: this.length }, () => {
       const currentNodeValue = currentNode?.value;
